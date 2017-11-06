@@ -1,5 +1,6 @@
 package net.mmarss.grease.core;
 
+import net.mmarss.grease.graphics.Graphics2d;
 import net.mmarss.grease.input.BasicInput;
 
 /**

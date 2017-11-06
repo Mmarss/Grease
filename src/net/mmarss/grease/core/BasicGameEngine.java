@@ -1,6 +1,8 @@
 package net.mmarss.grease.core;
 
 import net.mmarss.grease.exception.GreaseInvalidArgumentException;
+import net.mmarss.grease.graphics.Graphics2d;
+import net.mmarss.grease.graphics.Renderer;
 
 /**
  * A game engine sitting behind a {@link BasicGame}. This class manages the

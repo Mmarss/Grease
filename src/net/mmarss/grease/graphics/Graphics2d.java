@@ -1,4 +1,4 @@
-package net.mmarss.grease.core;
+package net.mmarss.grease.graphics;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -23,6 +23,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.system.MemoryUtil;
 
+import net.mmarss.grease.core.Shader;
 import net.mmarss.grease.exception.GreaseException;
 
 /**
@@ -145,6 +146,9 @@ public class Graphics2d {
 		}
 	}
 	
+	/**
+	 * Prepares the rendering context for rendering 2d graphics through this object.
+	 */
 	public void preRender() {
 		
 		if (shader == null) {
@@ -165,6 +169,9 @@ public class Graphics2d {
 		glEnableVertexAttribArray(0);
 	}
 	
+	/**
+	 * Renders any objects registered for this render cycle.
+	 */
 	public void render() {
 		
 		if (shader == null) {
@@ -174,6 +181,9 @@ public class Graphics2d {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 	
+	/**
+	 * Restores the rendering context, finishing this render cycle.
+	 */
 	public void postRender() {
 		
 		if (shader == null) {
@@ -186,6 +196,9 @@ public class Graphics2d {
 		shader.unbind();
 	}
 	
+	/**
+	 * Cleans up any resources allocated by this graphics manager.
+	 */
 	public void cleanup() {
 		
 		if (shader != null) {

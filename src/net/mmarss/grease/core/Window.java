@@ -41,6 +41,7 @@ import net.mmarss.grease.exception.GreaseException;
 import net.mmarss.grease.exception.GreaseRuntimeException;
 import net.mmarss.grease.exception.GreaseSystemException;
 import net.mmarss.grease.exception.GreaseWindowException;
+import net.mmarss.grease.graphics.Renderer;
 import net.mmarss.grease.input.InputManager;
 import net.mmarss.grease.input.Key;
 import net.mmarss.grease.input.KeyAction;

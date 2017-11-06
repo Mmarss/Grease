@@ -1,4 +1,4 @@
-package net.mmarss.grease.core;
+package net.mmarss.grease.graphics;
 
 /**
  * A renderer class, in charge of drawing to a window.
@@ -99,7 +99,7 @@ public abstract class Renderer {
 	 * @param height
 	 *            the canvas height.
 	 */
-	/* package */ final void setInitialSize(int width, int height) {
+	public final void setInitialSize(int width, int height) {
 		
 		this.width = width;
 		this.height = height;
@@ -114,7 +114,7 @@ public abstract class Renderer {
 	 * @param height
 	 *            the new canvas height.
 	 */
-	/* package */ final void resize(int width, int height) {
+	public final void resize(int width, int height) {
 		
 		this.width = width;
 		this.height = height;
@@ -126,7 +126,7 @@ public abstract class Renderer {
 	 * Closes off the current render cycle, clearing any events that were triggered
 	 * this cycle.
 	 */
-	/* package */ final void finalizeFrame() {
+	public final void finalizeFrame() {
 		
 		resized = false;
 	}

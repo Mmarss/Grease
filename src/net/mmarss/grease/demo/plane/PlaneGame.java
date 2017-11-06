@@ -2,7 +2,7 @@ package net.mmarss.grease.demo.plane;
 
 import net.mmarss.grease.core.BasicGame;
 import net.mmarss.grease.core.BasicGameEngine;
-import net.mmarss.grease.core.Graphics2d;
+import net.mmarss.grease.graphics.Graphics2d;
 import net.mmarss.grease.input.BasicInput;
 
 /**
