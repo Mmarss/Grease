@@ -1,43 +1,16 @@
 package net.mmarss.grease.core;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwHideWindow;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
 
-import net.mmarss.grease.exception.GreaseException;
 import net.mmarss.grease.exception.GreaseRuntimeException;
 import net.mmarss.grease.exception.GreaseSystemException;
 import net.mmarss.grease.exception.GreaseWindowException;
@@ -90,6 +63,9 @@ public class Window {
 	 * programmatically.
 	 */
 	private boolean		resized			= false;
+	
+	/** The callback used to log debug information. */
+	private Callback debugProc;
 	
 	/** Represents a window's dimensions. */
 	private class WindowSize {
@@ -302,7 +278,7 @@ public class Window {
 			// Run
 			loop(); // Run the main loop
 			
-		} catch (GreaseException e) {
+		} catch (Exception e) {
 			
 			e.printStackTrace();
 			
@@ -339,6 +315,7 @@ public class Window {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 		
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Don't show until everything is initialized
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // Allow resizing
@@ -353,17 +330,17 @@ public class Window {
 		// Place the window in the center of the screen
 		centerWindow();
 		
-		// Configure the input callbacks
-		initCallbacks();
-		
 		// Activate the OpenGL rendering context in this thread
 		glfwMakeContextCurrent(windowHandle);
 		
-		// Enable v-sync
-		glfwSwapInterval(1);
-		
 		// Connect OpenGL to the window
 		GL.createCapabilities();
+		
+		// Configure the system callbacks
+		initCallbacks();
+		
+		// Enable v-sync
+		glfwSwapInterval(1);
 		
 		// Set the clear color
 		GL11.glClearColor(0.020f, 0.094f, 0.271f, 1.0f);
@@ -413,6 +390,10 @@ public class Window {
 	 * Destroys the window and terminates GLFW.
 	 */
 	private void cleanup() {
+		
+		if (debugProc != null) {
+			debugProc.free();
+		}
 		
 		// Free the window callbacks
 		glfwFreeCallbacks(windowHandle);
@@ -472,5 +453,7 @@ public class Window {
 			windowSize.height = height;
 			resized = true;
 		});
+		
+		debugProc = GLUtil.setupDebugMessageCallback();
 	}
 }

@@ -2,7 +2,6 @@ package net.mmarss.grease.core;
 
 import net.mmarss.grease.exception.GreaseInvalidArgumentException;
 import net.mmarss.grease.graphics.Graphics2d;
-import net.mmarss.grease.graphics.Renderer;
 
 /**
  * A game engine sitting behind a {@link BasicGame}. This class manages the
@@ -118,47 +117,20 @@ public class BasicGameEngine {
 	 */
 	private void createWindow(BasicGame game, String title, int width, int height) {
 		
-		Graphics2d graphics2d = new Graphics2d();
-		
-		Timer frameTimer = new Timer();
-		
-		// Create the window
-		Window.createInstance(width, height, title, new Renderer() {
-			
-			// A renderer using a 2D graphics object and the game's render method
-			
-			@Override
-			public void init() {
-				
-				graphics2d.init();
-			}
-			
-			@Override
-			public void preRender() {
-				
-				graphics2d.preRender();
-			}
+		Graphics2d graphics2d = new Graphics2d() {
 			
 			@Override
 			public void render() {
 				
-				game.render(graphics2d);
-				graphics2d.render();
+				game.render(this);
+				super.render();
 			}
-			
-			@Override
-			public void postRender() {
-				
-				graphics2d.postRender();
-			}
-			
-			@Override
-			public void onResize(int width, int height) {
-				
-				graphics2d.resize(width, height);
-			}
-			
-		}, () -> {
+		};
+		
+		Timer frameTimer = new Timer();
+		
+		// Create the window
+		Window.createInstance(width, height, title, graphics2d, () -> {
 			// Initialize any resources
 			game.init();
 			frameTimer.start();

@@ -1,34 +1,8 @@
 package net.mmarss.grease.core;
 
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
-import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glDeleteProgram;
-import static org.lwjgl.opengl.GL20.glDetachShader;
-import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
-import static org.lwjgl.opengl.GL20.glGetProgrami;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
-import static org.lwjgl.opengl.GL20.glGetShaderi;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUniform3f;
-import static org.lwjgl.opengl.GL20.glUniform4f;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
+import static org.lwjgl.opengl.GL20.*;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +13,7 @@ import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import net.mmarss.grease.exception.GreaseFileException;
-import net.mmarss.grease.exception.GreaseInvalidMethodCallException;
-import net.mmarss.grease.exception.GreaseShaderCompilationError;
-import net.mmarss.grease.exception.GreaseShaderLinkerError;
-import net.mmarss.grease.exception.GreaseShaderOpenGLException;
-import net.mmarss.grease.exception.GreaseShaderUniformException;
+import net.mmarss.grease.exception.*;
 
 /**
  * A wrapper around an OpenGL shader.
@@ -372,9 +341,19 @@ public class Shader {
 			
 			this.type = type;
 			
+			if (type.equals(boolean.class)) {
+				this.type = Boolean.class;
+			} else if (type.equals(short.class)) {
+				this.type = Short.class;
+			} else if (type.equals(int.class)) {
+				this.type = Integer.class;
+			} else if (type.equals(float.class)) {
+				this.type = Float.class;
+			}
+			
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				
-				createBuffer(stack);
+				buffer = createBuffer(stack);
 				if (buffer == null) {
 					throw new GreaseShaderUniformException("Unrecognized uniform type " + type.getName());
 				}
@@ -398,16 +377,16 @@ public class Shader {
 		 */
 		private Buffer createBuffer(MemoryStack stack) {
 			
-			if (type.equals(boolean.class) || type.equals(Boolean.class)) {
+			if (type.equals(Boolean.class)) {
 				return stack.mallocInt(1);
 			}
-			if (type.equals(short.class) || type.equals(Short.class)) {
+			if (type.equals(Short.class)) {
 				return stack.mallocShort(1);
 			}
-			if (type.equals(int.class) || type.equals(Integer.class)) {
+			if (type.equals(Integer.class)) {
 				return stack.mallocInt(1);
 			}
-			if (type.equals(float.class) || type.equals(Float.class)) {
+			if (type.equals(Float.class)) {
 				return stack.mallocFloat(1);
 			}
 			if (type.equals(Vector2f.class)) {
@@ -436,19 +415,21 @@ public class Shader {
 		public void setUniform(Object value) throws GreaseShaderUniformException {
 			
 			if (!type.isAssignableFrom(value.getClass())) {
-				throw new GreaseShaderUniformException("Cannot assign value to uniform \"" + name + "\": wrong type");
+				throw new GreaseShaderUniformException("Cannot assign value to uniform \"" + name
+						+ "\": wrong type. This uniform has type " + type.getSimpleName()
+						+ ", but the passed value has type " + value.getClass().getSimpleName() + ".");
 			}
 			
-			if (type.equals(boolean.class) || type.equals(Boolean.class)) {
+			if (type.equals(Boolean.class)) {
 				glUniform1i(location, Boolean.class.cast(value) == true ? 1 : 0);
 			}
-			if (type.equals(short.class) || type.equals(Short.class)) {
+			if (type.equals(Short.class)) {
 				glUniform1i(location, Short.class.cast(value));
 			}
-			if (type.equals(int.class) || type.equals(Integer.class)) {
+			if (type.equals(Integer.class)) {
 				glUniform1i(location, Integer.class.cast(value));
 			}
-			if (type.equals(float.class) || type.equals(Float.class)) {
+			if (type.equals(Float.class)) {
 				glUniform1f(location, Float.class.cast(value));
 			}
 			if (type.equals(Vector2f.class)) {
@@ -463,7 +444,7 @@ public class Shader {
 						Vector4f.class.cast(value).z, Vector4f.class.cast(value).w);
 			}
 			if (type.equals(Matrix4f.class)) {
-				glUniformMatrix4fv(location, false, Matrix4f.class.cast(value).get(FloatBuffer.allocate(16)));
+				glUniformMatrix4fv(location, false, Matrix4f.class.cast(value).get(new float[16]));
 			}
 		}
 	}

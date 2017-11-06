@@ -1,12 +1,10 @@
 package net.mmarss.grease.input;
 
-import static org.lwjgl.glfw.GLFW.glfwGetKeyScancode;
+import static org.lwjgl.glfw.GLFW.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.lwjgl.glfw.GLFW;
 
 /**
  * An enumeration of keyboard keys.
@@ -14,13 +12,17 @@ import org.lwjgl.glfw.GLFW;
 public enum Key {
 	
 	KEY_UNKNOWN(-1),
-	KEY_A(GLFW.GLFW_KEY_A),
-	KEY_D(GLFW.GLFW_KEY_D),
-	KEY_R(GLFW.GLFW_KEY_R),
-	KEY_S(GLFW.GLFW_KEY_S),
-	KEY_W(GLFW.GLFW_KEY_W),
-	KEY_ESCAPE(GLFW.GLFW_KEY_ESCAPE),
-	KEY_LEFT_SUPER(GLFW.GLFW_KEY_LEFT_SUPER);
+	KEY_A(GLFW_KEY_A),
+	KEY_D(GLFW_KEY_D),
+	KEY_R(GLFW_KEY_R),
+	KEY_S(GLFW_KEY_S),
+	KEY_W(GLFW_KEY_W),
+	KEY_ESCAPE(GLFW_KEY_ESCAPE),
+	KEY_RIGHT(GLFW_KEY_RIGHT),
+	KEY_LEFT(GLFW_KEY_LEFT),
+	KEY_DOWN(GLFW_KEY_DOWN),
+	KEY_UP(GLFW_KEY_UP),
+	KEY_LEFT_SUPER(GLFW_KEY_LEFT_SUPER);
 	
 	/** The GLFW key ID for this key. Corresponds to the key's virtual code. */
 	private final int ID;
