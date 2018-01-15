@@ -22,6 +22,8 @@ public class Graphics2d extends Renderer {
 	/** The shader used to render these graphics. */
 	private Shader shader = null;
 	
+	private Font defaultFont = null;
+	
 	private int	rectVertVboId;
 	private int	rectTexVboId;
 	private int	rectEboId;
@@ -54,6 +56,8 @@ public class Graphics2d extends Renderer {
 			shader.createUniform("model", Matrix4f.class);
 			shader.createUniform("view", Matrix4f.class);
 			shader.createUniform("projection", Matrix4f.class);
+			
+			shader.createUniform("texMatrix", Matrix4f.class);
 			
 			shader.createUniform("useTexture", boolean.class);
 			shader.createUniform("texImage", int.class);
@@ -105,6 +109,7 @@ public class Graphics2d extends Renderer {
 		glBindVertexArray(0);
 		
 		shader.unbind();
+		
 	}
 	
 	/**
@@ -407,5 +412,57 @@ public class Graphics2d extends Renderer {
 	public void drawImageRect(Image image, float x0, float y0, float x1, float y1) {
 		
 		drawImage(image, new Matrix4f().translation(x0, y0, 0f).scale(x1 - x0, y1 - y0, 1f));
+	}
+	
+	public void drawString(String string, float x, float y) {
+		
+		drawString(string, defaultFont, x, y);
+	}
+	
+	public void drawString(String string, Font font, float x, float y) {
+		
+		font.bindTexture();
+		
+		try {
+			
+			shader.setUniform("useTexture", true);
+			shader.setUniform("texImage", 0);
+			
+		} catch (GreaseShaderUniformException e) { // Will only happen if the shader is changed.
+			e.printStackTrace();
+			return;
+		}
+		
+		float xAdvance = 0.0f;
+		for (int i = 0; i < string.length(); i++) {
+			Font.CharacterMetrics metrics = font.getCharacterMetrics(string.charAt(i));
+			
+			try {
+				shader.setUniform("model",
+						new Matrix4f().translation(x + xAdvance + metrics.vertRect.getMinX(),
+								y + metrics.vertRect.getMinY(), 0f)
+								.scale(metrics.vertRect.getWidth(), metrics.vertRect.getHeight(), 1f));
+				shader.setUniform("texMatrix",
+						new Matrix4f().translation(metrics.texRect.getMinX(), metrics.texRect.getMinY(), 0.0f)
+								.scale(metrics.texRect.getWidth(), metrics.texRect.getHeight(), 1f));
+				xAdvance += metrics.advance;
+				
+			} catch (GreaseShaderUniformException e) { // Will only happen if the shader is changed.
+				e.printStackTrace();
+				return;
+			}
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+		}
+		try {
+			
+			shader.setUniform("texMatrix", new Matrix4f());
+			shader.setUniform("useTexture", false);
+		} catch (GreaseShaderUniformException e) { // Will only happen if the shader is changed.
+			e.printStackTrace();
+			return;
+		}
+		
+		font.unbindTexture();
 	}
 }

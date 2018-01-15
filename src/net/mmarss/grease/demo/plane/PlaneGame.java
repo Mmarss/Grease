@@ -138,6 +138,8 @@ public class PlaneGame extends BasicGame {
 		
 		g.setColor(1.0f, 1.0f, 1.0f);
 		g.drawImageRotated(plane, 400, 600 - height, angle);
+		
+		// g.drawString("Hello World", 400, 300);
 	}
 	
 	@Override

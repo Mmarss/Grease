@@ -187,9 +187,6 @@ public class Image {
 		if (textureId == -1) {
 			textureId = glGenTextures();
 		}
-	}
-	
-	public void bindTexture() {
 		
 		glBindTexture(GL_TEXTURE_2D, textureId);
 		
@@ -211,6 +208,13 @@ public class Image {
 		}
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	
+	public void bindTexture() {
+		
+		glBindTexture(GL_TEXTURE_2D, textureId);
 	}
 	
 	public void unbindTexture() {

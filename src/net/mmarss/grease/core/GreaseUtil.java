@@ -3,6 +3,13 @@ package net.mmarss.grease.core;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.lwjgl.BufferUtils;
 
 import net.mmarss.grease.exception.GreaseFileException;
 
@@ -40,6 +47,41 @@ public class GreaseUtil {
 			
 		} catch (IOException e) {
 			throw new GreaseFileException("Could not read file " + RESOURCE_DIR + filename + ": " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Reads the specified file into a single byte buffer.
+	 * 
+	 * @param filename
+	 *            the file to read.
+	 * @return the file contents, as a byte buffer.
+	 * @throws GreaseFileException
+	 *             if the file could not be read.
+	 */
+	public static ByteBuffer loadBinaryResource(String filename) throws GreaseFileException {
+		
+		ByteBuffer buffer;
+		Path path = Paths.get(filename);
+		
+		if (Files.isReadable(path)) {
+			
+			try (SeekableByteChannel channel = Files.newByteChannel(path)) {
+				
+				buffer = BufferUtils.createByteBuffer((int) channel.size() + 1);
+				while (channel.read(buffer) != -1) {}
+				
+			} catch (IOException e) {
+				
+				throw new GreaseFileException("Could not read file " + filename + ": " + e.getMessage());
+			}
+			
+			buffer.flip();
+			return buffer;
+			
+		} else {
+			
+			throw new GreaseFileException("Could not open file " + filename + ": file does not exist.");
 		}
 	}
 }

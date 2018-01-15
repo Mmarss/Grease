@@ -7,7 +7,7 @@ import org.joml.Vector2fc;
  * Represents an axis-aligned two-dimensional rectangle. This class is
  * immutable.
  */
-public class Rect {
+public class Rect implements Rectc {
 	
 	/** The minimum corner. */
 	private final Pointc	corner0;
@@ -50,6 +50,7 @@ public class Rect {
 	/**
 	 * @return the lower x-axis bound of this rectangle.
 	 */
+	@Override
 	public float getMinX() {
 		
 		return corner0.getX();
@@ -58,6 +59,7 @@ public class Rect {
 	/**
 	 * @return the lower y-axis bound of this rectangle.
 	 */
+	@Override
 	public float getMinY() {
 		
 		return corner0.getY();
@@ -66,6 +68,7 @@ public class Rect {
 	/**
 	 * @return the upper x-axis bound of this rectangle.
 	 */
+	@Override
 	public float getMaxX() {
 		
 		return corner1.getX();
@@ -74,6 +77,7 @@ public class Rect {
 	/**
 	 * @return the upper y-axis bound of this rectangle.
 	 */
+	@Override
 	public float getMaxY() {
 		
 		return corner1.getY();
@@ -82,6 +86,7 @@ public class Rect {
 	/**
 	 * @return this rectangle's width; the x-axis span of this rectangle.
 	 */
+	@Override
 	public float getWidth() {
 		
 		return corner1.getX() - corner0.getX();
@@ -90,6 +95,7 @@ public class Rect {
 	/**
 	 * @return this rectangle's height; the y-axis span of this rectangle.
 	 */
+	@Override
 	public float getHeight() {
 		
 		return corner1.getY() - corner0.getY();
@@ -121,6 +127,7 @@ public class Rect {
 	 * @return <code>true</code> if this rectangle intersects the given rectangle,
 	 *         or <code>false</code> if not.
 	 */
+	@Override
 	public boolean intersects(Rect other) {
 		
 		return Intersectionf.testAarAar(getMinCorner(), getMaxCorner(), other.getMinCorner(), other.getMaxCorner());
@@ -134,6 +141,7 @@ public class Rect {
 	 * @return <code>true</code> if this rectangle intersects the given circle, or
 	 *         <code>false</code> if not.
 	 */
+	@Override
 	public boolean intersects(Circle other) {
 		
 		return Intersectionf.testAarCircle(getMinCorner(), getMaxCorner(), other.getCenterVec(),
